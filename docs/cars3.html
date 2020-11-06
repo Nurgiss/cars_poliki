@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- Bootstrap core CSS -->
+    <link href="https://getbootstrap.com/docs/3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="https://getbootstrap.com/docs/3.3/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="https://getbootstrap.com/docs/3.3/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="https://getbootstrap.com/docs/3.3/assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        *, *:before, *:after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        .wrap {
+            display: flex;
+        }
+
+        .list {
+            height: 100vh;
+            width: 33.33%;
+            overflow: auto;
+            padding: 5px;
+        }
+
+        .years {
+            padding: 5px;
+        }
+
+        .list__item {
+            cursor: pointer;
+            background: aliceblue;
+            padding: 5px;
+            margin: 3px;
+        }
+
+        .list__item:hover, .list__item.active {
+            background: blueviolet;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h3>Введите данные машины</h3><br>
+            <form action="index.php" method="post">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <label for="cars">Choose a car</label>
+                        <select id="cars" name="cars" class="input-group-addon">dsad
+                            <option value="volvo">AC</option>
+                            <option value="saab">Acura</option>
+                            <option value="mercedes">Mercedes SLK</option>
+                            <option value="audi">Audi TT</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="basic-addon1">Модель</span>
+                        <input type="text" class="form-control" placeholder="Camry" name="model">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="basic-addon1">Год</span>
+                        <input type="number" class="form-control" placeholder="1998" name="year">
+                    </div>
+                </div>
+                <br><br><br>
+                <input type="submit"  name="submit" value="Добавить" class="btn btn-primary pull-right">
+                <br><br><br>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+<div id="app">
+    <div class="wrap">
+        <div class="list">
+            Марка ({{makes.length}})<br><br>
+
+            <select class="list__item" :class="{active: item === currentMake}" v-for="(item, index) in makes" :key="index"
+                 @click="choose(item)">
+                <option value="">{{ item }}</option>
+            </select>
+        </div>
+        <div class="list">
+            Модель ({{models.length}}) <br><br>
+            <div class="list__item" :class="{active: item === currentModel}" v-for="(item, index) in models"
+                 :key="index" @click="getYears(item)">
+                {{ item[0] }}
+            </div>
+        </div>
+        <div class="years" v-if="model[0]">
+            Года выпуска <br><br>
+            <div>{{ model[1] }} — {{ model[2] }}</div>
+        </div>
+    </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            base: {},
+            makes: [],
+            models: [],
+            model: [],
+            currentMake: "",
+            currentModel: "",
+        },
+        methods: {
+            choose(item) {
+                this.currentMake = item
+                this.model = []
+                this.models = this.base[item]
+            },
+            getYears(item) {
+                this.currentModel = item
+                this.model = item
+            }
+        },
+        async mounted() {
+            const cars3 = await fetch('cars3.json')
+            const array = await cars3.json()
+            this.base = array
+            this.makes = Object.keys(array)
+        }
+    })
+</script>
+</body>
+</html>
